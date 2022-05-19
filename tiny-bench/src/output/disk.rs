@@ -1,7 +1,7 @@
 #[cfg(feature = "bench")]
 use crate::benching::SamplingData;
 use crate::error::{Error, Result};
-use crate::output::wrap_yellow;
+use crate::output::{wrap_high_insensity_red, wrap_yellow};
 #[cfg(feature = "timer")]
 use crate::timing::TimingData;
 use std::ffi::OsStr;
@@ -37,7 +37,7 @@ pub(crate) fn try_write_results(label: &'static str, data: TimingData) {
         CURRENT_RESULTS,
         OLD_RESULTS,
     ) {
-        println!("{}, cause {e}", wrap_yellow("Failed to write timing data"));
+        println!("{} {e}", wrap_high_insensity_red("Failed to write timing data, cause"));
     }
 }
 
@@ -50,8 +50,8 @@ pub(crate) fn try_write_last_simpling(label: &'static str, data: &SamplingData) 
         OLD_SAMPLE,
     ) {
         println!(
-            "{}, cause {e}",
-            crate::output::wrap_high_insensity_red("Failed to write sampling data")
+            "{} {e}",
+            wrap_high_insensity_red("Failed to write sampling data, cause:")
         );
     }
 }
@@ -62,6 +62,9 @@ fn try_write(
     current_file_name: &str,
     old_file_name: &'static str,
 ) -> Result<()> {
+    if label.contains(std::path::is_separator) {
+        return Err(Error::new(format!("Label {label} contains a path separator, cannot write to disk.")))
+    }
     let parent_dir = find_or_create_result_parent_dir(label)?;
     std::fs::create_dir_all(&parent_dir).map_err(|e| {
         Error::new(format!(
@@ -91,6 +94,9 @@ fn try_write(
 }
 
 fn try_read(label: &'static str, current_file_name: &'static str) -> Result<Option<Vec<u8>>> {
+    if label.contains(std::path::is_separator) {
+        return Err(Error::new(format!("Label {label} contains a path separator, cannot read old data from disk.")));
+    }
     let parent_dir = find_or_create_result_parent_dir(label)?;
     let latest_persisted_path = parent_dir.join(current_file_name);
     match std::fs::read(&latest_persisted_path) {
