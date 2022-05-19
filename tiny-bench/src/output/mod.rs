@@ -146,18 +146,19 @@ impl Output for ComparedStdout {
                     100,
                 );
                 let p = calculate_p_value(t, &t_distribution);
-                let mean_change =
-                    if mean_change.abs() >= cfg.noise_threshold && p <= cfg.significance_level {
-                        if mean_change > 0.0 {
-                            MeanComparison::new(mean_change, Comparison::Worse)
-                        } else if mean_change < 0.0 {
-                            MeanComparison::new(mean_change, Comparison::Better)
-                        } else {
-                            MeanComparison::new(mean_change, Comparison::Same)
-                        }
+                let mean_change = if mean_change.abs() >= cfg.noise_threshold * 100f64
+                    && p <= cfg.significance_level
+                {
+                    if mean_change > 0.0 {
+                        MeanComparison::new(mean_change, Comparison::Worse)
+                    } else if mean_change < 0.0 {
+                        MeanComparison::new(mean_change, Comparison::Better)
                     } else {
                         MeanComparison::new(mean_change, Comparison::Same)
-                    };
+                    }
+                } else {
+                    MeanComparison::new(mean_change, Comparison::Same)
+                };
                 print_cmp(min_change, &mean_change, max_change, &format!("p = {p:.2}"));
             }
             Err(e) => {
@@ -276,7 +277,7 @@ pub(crate) fn wrap_high_intensity_white(text: &str) -> String {
     format!("\x1b[0;97m{text}\x1b[0m")
 }
 
-fn fmt_time(time: f64) -> String {
+pub(crate) fn fmt_time(time: f64) -> String {
     // Nanos
     if time < NANO_LIMIT {
         format!("{:.2}ns", time)
@@ -293,7 +294,7 @@ fn fmt_change(change: f64) -> String {
     format!("{:.4}%", change)
 }
 
-fn fmt_num(num: f64) -> String {
+pub(crate) fn fmt_num(num: f64) -> String {
     if num < NANO_LIMIT {
         format!("{:.1}", num)
     } else if num < MICRO_LIMIT {

@@ -1,5 +1,5 @@
 use crate::output::analysis::criterion::calculate_iterations;
-use crate::output::Output;
+use crate::output::{fmt_num, fmt_time, wrap_bold_green, wrap_high_intensity_white, Output};
 use crate::{black_box, BenchmarkConfig};
 use std::time::{Duration, Instant};
 
@@ -20,15 +20,25 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
     cfg: &BenchmarkConfig,
     mut closure: F,
 ) {
-    let wu = run_warm_up(&mut closure, Duration::from_secs(1));
+    println!(
+        "{} warming up for {}",
+        wrap_bold_green(label),
+        wrap_high_intensity_white(&fmt_time(cfg.warm_up_time.as_nanos() as f64))
+    );
+    let wu = run_warm_up(&mut closure, cfg.warm_up_time);
     let mean_execution_time = wu.elapsed.as_nanos() as f64 / wu.iterations as f64;
-
     let sample_size = cfg.sample_size as u64;
     let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
     let mut total_iters = 0u128;
     for count in iters.iter().copied() {
         total_iters = total_iters.saturating_add(u128::from(count));
     }
+    println!(
+        "{} mean warm up execution time {} running {} iterations",
+        wrap_bold_green(label),
+        wrap_high_intensity_white(&fmt_time(mean_execution_time)),
+        wrap_high_intensity_white(&fmt_num(total_iters as f64))
+    );
     let sampling_data = run(iters, closure);
     if cfg.dump_results_to_disk {
         crate::output::ComparedStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
@@ -93,7 +103,12 @@ pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut()
         let input = (setup)();
         (closure)(input);
     };
-    let wu = run_warm_up(&mut wu_routine, Duration::from_secs(1));
+    println!(
+        "{} warming up for {}",
+        wrap_bold_green(label),
+        wrap_high_intensity_white(&fmt_time(cfg.warm_up_time.as_nanos() as f64))
+    );
+    let wu = run_warm_up(&mut wu_routine, cfg.warm_up_time);
     let mean_execution_time = wu.elapsed.as_nanos() as f64 / wu.iterations as f64;
 
     let sample_size = cfg.sample_size as u64;
@@ -102,6 +117,12 @@ pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut()
     for count in iters.iter().copied() {
         total_iters = total_iters.saturating_add(u128::from(count));
     }
+    println!(
+        "{} mean warm up execution time {} running {} iterations",
+        wrap_bold_green(label),
+        wrap_high_intensity_white(&fmt_time(mean_execution_time)),
+        wrap_high_intensity_white(&fmt_num(total_iters as f64))
+    );
     let sampling_data = run_with_setup(iters, setup, closure);
     if cfg.dump_results_to_disk {
         crate::output::ComparedStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);

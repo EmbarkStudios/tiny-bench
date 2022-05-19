@@ -37,7 +37,10 @@ pub(crate) fn try_write_results(label: &'static str, data: TimingData) {
         CURRENT_RESULTS,
         OLD_RESULTS,
     ) {
-        println!("{} {e}", wrap_high_insensity_red("Failed to write timing data, cause"));
+        println!(
+            "{} {e}",
+            wrap_high_insensity_red("Failed to write timing data, cause")
+        );
     }
 }
 
@@ -63,7 +66,9 @@ fn try_write(
     old_file_name: &'static str,
 ) -> Result<()> {
     if label.contains(std::path::is_separator) {
-        return Err(Error::new(format!("Label {label} contains a path separator, cannot write to disk.")))
+        return Err(Error::new(format!(
+            "Label {label} contains a path separator, cannot write to disk."
+        )));
     }
     let parent_dir = find_or_create_result_parent_dir(label)?;
     std::fs::create_dir_all(&parent_dir).map_err(|e| {
@@ -95,7 +100,9 @@ fn try_write(
 
 fn try_read(label: &'static str, current_file_name: &'static str) -> Result<Option<Vec<u8>>> {
     if label.contains(std::path::is_separator) {
-        return Err(Error::new(format!("Label {label} contains a path separator, cannot read old data from disk.")));
+        return Err(Error::new(format!(
+            "Label {label} contains a path separator, cannot read old data from disk."
+        )));
     }
     let parent_dir = find_or_create_result_parent_dir(label)?;
     let latest_persisted_path = parent_dir.join(current_file_name);

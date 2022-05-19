@@ -1,5 +1,6 @@
 use crate::output::analysis::random::Rng;
 use std::time::Duration;
+use crate::output::wrap_yellow;
 
 /// Everything in this module is more or less copied from [criterion.rs](https://github.com/bheisler/criterion.rs)
 /// the license is included in this file'l directory
@@ -56,8 +57,8 @@ pub(crate) fn calculate_iterations(
     let mut expected_nanoseconds = total_runs as f64 * d as f64 * met;
     if d == 1 {
         let actual_time = Duration::from_nanos(expected_nanoseconds as u64);
-        println!("Unable to complete {} samples in {:.1?}. You may wish to increase target time to {:.1?}. Will compress sample size",
-                 sample_size, target_time, actual_time);
+        println!("{} You may wish to increase target time to {:.1?}. Will compress sample size",
+                 wrap_yellow(&format!("Unable to complete {} samples in {:.1?}", sample_size, target_time)), actual_time);
         while d == 1 && sample_size > 1 {
             sample_size -= 1;
             total_runs = sample_size * (sample_size + 1) / 2;
@@ -65,8 +66,8 @@ pub(crate) fn calculate_iterations(
             expected_nanoseconds = total_runs as f64 * d as f64 * met;
         }
         println!(
-            "Compressed sample_size to {}, with an expected running time of {:.1?}",
-            sample_size,
+            "{} with an expected running time of {:.1?}",
+            wrap_yellow(&format!("Compressed sample_size to {}", sample_size)),
             Duration::from_nanos(expected_nanoseconds as u64)
         );
     }
