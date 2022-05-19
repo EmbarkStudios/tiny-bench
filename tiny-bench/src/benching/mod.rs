@@ -31,9 +31,9 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
     }
     let sampling_data = run(iters, closure);
     if cfg.dump_results_to_disk {
-        crate::output::ComparedStdout.dump_sampling_data(label, sampling_data, cfg, total_iters);
+        crate::output::ComparedStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
     } else {
-        crate::output::SimpleStdout.dump_sampling_data(label, sampling_data, cfg, total_iters);
+        crate::output::SimpleStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
     }
 }
 
@@ -104,9 +104,9 @@ pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut()
     }
     let sampling_data = run_with_setup(iters, setup, closure);
     if cfg.dump_results_to_disk {
-        crate::output::ComparedStdout.dump_sampling_data(label, sampling_data, cfg, total_iters);
+        crate::output::ComparedStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
     } else {
-        crate::output::SimpleStdout.dump_sampling_data(label, sampling_data, cfg, total_iters);
+        crate::output::SimpleStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
     }
 }
 

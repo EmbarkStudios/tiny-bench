@@ -50,7 +50,7 @@ pub(crate) trait Output {
     fn dump_sampling_data(
         &self,
         label: &str,
-        sampling_data: SamplingData,
+        sampling_data: &SamplingData,
         cfg: &BenchmarkConfig,
         total_iters: u128,
     );
@@ -71,7 +71,7 @@ impl Output for SimpleStdout {
     fn dump_sampling_data(
         &self,
         label: &str,
-        sampling_data: SamplingData,
+        sampling_data: &SamplingData,
         cfg: &BenchmarkConfig,
         total_iters: u128,
     ) {
@@ -126,7 +126,7 @@ impl Output for ComparedStdout {
     fn dump_sampling_data(
         &self,
         label: &str,
-        sampling_data: SamplingData,
+        sampling_data: &SamplingData,
         cfg: &BenchmarkConfig,
         total_iters: u128,
     ) {

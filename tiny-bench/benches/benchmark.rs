@@ -2,10 +2,10 @@ use tiny_bench::black_box;
 
 fn main() {
     bench_test_one();
-    //bench_test_two();
+    bench_test_two();
 }
 
-fn bench_test_one() {
+pub fn bench_test_one() {
     tiny_bench::bench(|| {
         let mut v: Vec<i32> = Vec::with_capacity(10_000);
         for i in 0..10_000 {
@@ -19,7 +19,7 @@ fn bench_test_one() {
     })
 }
 
-fn bench_test_two() {
+pub fn bench_test_two() {
     tiny_bench::bench_with_setup(
         || Vec::with_capacity(10_000),
         |mut v| {

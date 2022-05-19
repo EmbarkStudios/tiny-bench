@@ -16,7 +16,7 @@ bench = []
 
 [[bench]]
 name = "benchmark"
-harness = false
+# harness = false
 
 [[example]]
 name = "time_iterator"
@@ -26,4 +26,7 @@ name = "time_loop"
 required-features = ["timer"]
 [[example]]
 name = "bad_sort"
+required-features = ["bench"]
+[[example]]
+name = "bench_compare"
 required-features = ["bench"]
