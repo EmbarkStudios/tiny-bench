@@ -7,7 +7,7 @@ pub fn bench<T, F: FnMut() -> T>(closure: F) {
     bench_with_configuration(&BenchmarkConfig::default(), closure);
 }
 
-pub fn bench_labeled<T, F: FnMut() -> T>(label: &str, closure: F) {
+pub fn bench_labeled<T, F: FnMut() -> T>(label: &'static str, closure: F) {
     bench_with_configuration_labeled(label, &BenchmarkConfig::default(), closure);
 }
 
@@ -16,7 +16,7 @@ pub fn bench_with_configuration<T, F: FnMut() -> T>(cfg: &BenchmarkConfig, closu
 }
 
 pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
-    label: &str,
+    label: &'static str,
     cfg: &BenchmarkConfig,
     mut closure: F,
 ) {
@@ -68,7 +68,7 @@ pub fn bench_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(setup: S, closu
 }
 
 pub fn bench_with_setup_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
-    label: &str,
+    label: &'static str,
     setup: S,
     closure: F,
 ) {
@@ -84,7 +84,7 @@ pub fn bench_with_setup_configuration<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
 }
 
 pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
-    label: &str,
+    label: &'static str,
     cfg: &BenchmarkConfig,
     mut setup: S,
     mut closure: F,

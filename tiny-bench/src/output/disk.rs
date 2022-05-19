@@ -20,7 +20,7 @@ const CURRENT_SAMPLE: &str = "current-sample";
 const OLD_SAMPLE: &str = "old-sample";
 
 #[cfg(feature = "timer")]
-pub(crate) fn try_read_last_results(label: &str) -> Result<Option<TimingData>> {
+pub(crate) fn try_read_last_results(label: &'static str) -> Result<Option<TimingData>> {
     let maybe_data = try_read(label, CURRENT_RESULTS)?;
     if let Some(data) = maybe_data {
         Ok(Some(crate::output::ser::try_de_timing_data(&data)?))
@@ -30,7 +30,7 @@ pub(crate) fn try_read_last_results(label: &str) -> Result<Option<TimingData>> {
 }
 
 #[cfg(feature = "timer")]
-pub(crate) fn try_write_results(label: &str, data: TimingData) {
+pub(crate) fn try_write_results(label: &'static str, data: TimingData) {
     if let Err(e) = try_write(
         label,
         &crate::output::ser::ser_timing_data(data),
@@ -42,7 +42,7 @@ pub(crate) fn try_write_results(label: &str, data: TimingData) {
 }
 
 #[cfg(feature = "bench")]
-pub(crate) fn try_write_last_simpling(label: &str, data: &SamplingData) {
+pub(crate) fn try_write_last_simpling(label: &'static str, data: &SamplingData) {
     if let Err(e) = try_write(
         label,
         &crate::output::ser::ser_sampling_data(data),
@@ -56,7 +56,12 @@ pub(crate) fn try_write_last_simpling(label: &str, data: &SamplingData) {
     }
 }
 
-fn try_write(label: &str, data: &[u8], current_file_name: &str, old_file_name: &str) -> Result<()> {
+fn try_write(
+    label: &'static str,
+    data: &[u8],
+    current_file_name: &str,
+    old_file_name: &'static str,
+) -> Result<()> {
     let parent_dir = find_or_create_result_parent_dir(label)?;
     std::fs::create_dir_all(&parent_dir).map_err(|e| {
         Error::new(format!(
@@ -85,7 +90,7 @@ fn try_write(label: &str, data: &[u8], current_file_name: &str, old_file_name: &
     })
 }
 
-fn try_read(label: &str, current_file_name: &str) -> Result<Option<Vec<u8>>> {
+fn try_read(label: &'static str, current_file_name: &'static str) -> Result<Option<Vec<u8>>> {
     let parent_dir = find_or_create_result_parent_dir(label)?;
     let latest_persisted_path = parent_dir.join(current_file_name);
     match std::fs::read(&latest_persisted_path) {
@@ -101,7 +106,7 @@ fn try_read(label: &str, current_file_name: &str) -> Result<Option<Vec<u8>>> {
 }
 
 #[cfg(feature = "bench")]
-pub(crate) fn try_read_last_simpling(label: &str) -> Result<Option<SamplingData>> {
+pub(crate) fn try_read_last_simpling(label: &'static str) -> Result<Option<SamplingData>> {
     let maybe_data = try_read(label, CURRENT_SAMPLE)?;
     if let Some(data) = maybe_data {
         Ok(Some(crate::output::ser::try_de_sampling_data(&data)?))
@@ -110,7 +115,7 @@ pub(crate) fn try_read_last_simpling(label: &str) -> Result<Option<SamplingData>
     }
 }
 
-fn find_or_create_result_parent_dir(label: &str) -> Result<PathBuf> {
+fn find_or_create_result_parent_dir(label: &'static str) -> Result<PathBuf> {
     let target = find_target()?;
     let pb = PathBuf::from(&target);
     let target_buf = std::fs::metadata(&pb).map_err(|e| {

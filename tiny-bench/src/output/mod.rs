@@ -18,17 +18,14 @@ const DEFAULT_TIMING_THRESHOLD: f64 = 5.0;
 
 #[cfg(feature = "timer")]
 pub(crate) struct LabeledOutput<Output> {
-    label: String,
+    label: &'static str,
     out: Output,
 }
 
 #[cfg(feature = "timer")]
 impl<O> LabeledOutput<O> {
-    pub(crate) fn new(label: impl Into<String>, out: O) -> Self {
-        Self {
-            label: label.into(),
-            out,
-        }
+    pub(crate) fn new(label: &'static str, out: O) -> Self {
+        Self { label, out }
     }
 }
 
@@ -38,18 +35,18 @@ where
     O: Output,
 {
     pub(crate) fn dump(&self, data: TimingData) {
-        self.out.dump_timing_data(&self.label, data);
+        self.out.dump_timing_data(self.label, data);
     }
 }
 
 pub(crate) trait Output {
     #[cfg(feature = "timer")]
-    fn dump_timing_data(&self, label: &str, data: TimingData);
+    fn dump_timing_data(&self, label: &'static str, data: TimingData);
 
     #[cfg(feature = "bench")]
     fn dump_sampling_data(
         &self,
-        label: &str,
+        label: &'static str,
         sampling_data: &SamplingData,
         cfg: &BenchmarkConfig,
         total_iters: u128,
@@ -61,7 +58,7 @@ pub struct SimpleStdout;
 
 impl Output for SimpleStdout {
     #[cfg(feature = "timer")]
-    fn dump_timing_data(&self, label: &str, data: TimingData) {
+    fn dump_timing_data(&self, label: &'static str, data: TimingData) {
         print_timer_header(label, &data);
         let mean = data.elapsed as f64 / data.iterations as f64;
         print_elapsed(data.min_nanos as f64, mean, data.max_nanos as f64);
@@ -70,12 +67,12 @@ impl Output for SimpleStdout {
     #[cfg(feature = "bench")]
     fn dump_sampling_data(
         &self,
-        label: &str,
+        label: &'static str,
         sampling_data: &SamplingData,
         cfg: &BenchmarkConfig,
         total_iters: u128,
     ) {
-        let analysis = simple_analyze_sampling_data(&sampling_data);
+        let analysis = simple_analyze_sampling_data(sampling_data);
         print_sample_header(label, total_iters, analysis.elapsed, cfg.sample_size as u64);
         print_elapsed(analysis.max, analysis.average, analysis.max);
     }
@@ -86,7 +83,7 @@ pub struct ComparedStdout;
 
 impl Output for ComparedStdout {
     #[cfg(feature = "timer")]
-    fn dump_timing_data(&self, label: &str, data: TimingData) {
+    fn dump_timing_data(&self, label: &'static str, data: TimingData) {
         let mean = data.elapsed as f64 / data.iterations as f64;
         let maybe_old = disk::try_read_last_results(label);
         print_timer_header(label, &data);
@@ -125,12 +122,12 @@ impl Output for ComparedStdout {
     #[cfg(feature = "bench")]
     fn dump_sampling_data(
         &self,
-        label: &str,
+        label: &'static str,
         sampling_data: &SamplingData,
         cfg: &BenchmarkConfig,
         total_iters: u128,
     ) {
-        let analysis = simple_analyze_sampling_data(&sampling_data);
+        let analysis = simple_analyze_sampling_data(sampling_data);
         print_sample_header(label, total_iters, analysis.elapsed, cfg.sample_size as u64);
         print_elapsed(analysis.max, analysis.average, analysis.max);
         match disk::try_read_last_simpling(label) {
@@ -172,12 +169,12 @@ impl Output for ComparedStdout {
             _ => {}
         }
 
-        disk::try_write_last_simpling(label, &sampling_data);
+        disk::try_write_last_simpling(label, sampling_data);
     }
 }
 
 #[cfg(feature = "timer")]
-pub(crate) fn print_timer_header(label: &str, data: &TimingData) {
+pub(crate) fn print_timer_header(label: &'static str, data: &TimingData) {
     println!(
         "{} [{} iterations in {}]:",
         wrap_bold_green(label),
@@ -188,7 +185,7 @@ pub(crate) fn print_timer_header(label: &str, data: &TimingData) {
 
 #[cfg(feature = "bench")]
 pub(crate) fn print_sample_header(
-    label: &str,
+    label: &'static str,
     total_iterations: u128,
     total_elapsed: u128,
     num_samples: u64,

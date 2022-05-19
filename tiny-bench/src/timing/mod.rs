@@ -144,7 +144,7 @@ where
     /// // Prints results when the iterator has been drained
     /// assert_eq!(100, v.len());
     /// ```
-    fn timed_labeled(self, label: impl Into<String>) -> TimedIterator<It, T, SimpleStdout>;
+    fn timed_labeled(self, label: &'static str) -> TimedIterator<It, T, SimpleStdout>;
 
     /// Time this iterator with an anonymous label and persist the result so that other anonymous
     /// time results will be compared with it when they run next
@@ -153,24 +153,18 @@ where
     }
 
     /// Time this iterator with a custom label to separate different runs for comparison
-    fn timed_persisted_labeled(
-        self,
-        label: impl Into<String>,
-    ) -> TimedIterator<It, T, ComparedStdout>;
+    fn timed_persisted_labeled(self, label: &'static str) -> TimedIterator<It, T, ComparedStdout>;
 }
 
 impl<It, T> Timeable<It, T> for It
 where
     It: Iterator<Item = T>,
 {
-    fn timed_labeled(self, label: impl Into<String>) -> TimedIterator<It, T, SimpleStdout> {
+    fn timed_labeled(self, label: &'static str) -> TimedIterator<It, T, SimpleStdout> {
         TimedIterator::new(self, LabeledOutput::new(label, SimpleStdout))
     }
 
-    fn timed_persisted_labeled(
-        self,
-        label: impl Into<String>,
-    ) -> TimedIterator<It, T, ComparedStdout> {
+    fn timed_persisted_labeled(self, label: &'static str) -> TimedIterator<It, T, ComparedStdout> {
         TimedIterator::new(self, LabeledOutput::new(label, ComparedStdout))
     }
 }
