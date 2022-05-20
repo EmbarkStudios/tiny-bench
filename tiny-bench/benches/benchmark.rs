@@ -4,6 +4,7 @@ use tiny_bench::black_box;
 fn main() {
     bench_test_one();
     bench_test_two();
+    bench_test_three();
 }
 
 fn bench_test_one() {
@@ -39,4 +40,11 @@ fn bench_test_two() {
             assert!(sum >= black_box(1));
         },
     )
+}
+
+fn bench_test_three() {
+    tiny_bench::bench_labeled("test three, empty", || {
+        let a = black_box(5);
+        assert_eq!(black_box(a), black_box(5));
+    })
 }

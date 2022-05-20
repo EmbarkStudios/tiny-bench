@@ -52,13 +52,11 @@ fn run<T, F: FnMut() -> T>(sample_sizes: Vec<u64>, mut closure: F) -> SamplingDa
         .iter()
         .copied()
         .map(|it_count| {
-            let mut elapsed = Duration::ZERO;
+            let start = Instant::now();
             for _ in 0..it_count {
-                let start = Instant::now();
                 black_box((closure)());
-                elapsed += Instant::now().duration_since(start);
             }
-            elapsed.as_nanos()
+            start.elapsed().as_nanos()
         })
         .collect();
     SamplingData {
@@ -158,15 +156,19 @@ fn run_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
 
 fn run_warm_up<T, F: FnMut() -> T>(closure: &mut F, warmup_time: Duration) -> WarmupResults {
     let mut elapsed = Duration::ZERO;
-    let mut it = 0;
+    let mut iterations = 0u128;
+    let mut run_iterations = 1u64;
     loop {
         let start = Instant::now();
-        closure();
-        elapsed += Instant::now().duration_since(start);
-        it += 1;
+        for _ in 0..run_iterations {
+            closure();
+        }
+        elapsed += start.elapsed();
+        iterations += u128::from(run_iterations);
+        run_iterations = run_iterations.wrapping_mul(2);
         if elapsed >= warmup_time {
             return WarmupResults {
-                iterations: it,
+                iterations,
                 elapsed,
             };
         }
