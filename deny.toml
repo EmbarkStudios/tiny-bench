@@ -1,4 +1,2 @@
 [licenses]
-allow = [
-    "MIT",
-]
+private = { ignore = true, registries = ["embark"] }

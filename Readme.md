@@ -153,5 +153,3 @@ fn my_faster_function() {
 }
 
 ```
-
-This project is licensed under the [MIT license](LICENSE)
