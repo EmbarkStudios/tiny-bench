@@ -8,8 +8,8 @@ fn main() {
 
 fn bench_test_one() {
     tiny_bench::bench_labeled("test one", || {
-        let mut v: Vec<i32> = Vec::with_capacity(1_000_000);
-        for i in 0..black_box(1_000_000) {
+        let mut v: Vec<i32> = Vec::with_capacity(10_000);
+        for i in 0..black_box(10_000) {
             v.push(black_box(i));
         }
         let mut sum = 0;
@@ -25,13 +25,13 @@ fn bench_test_two() {
         "test two",
         || {
             std::thread::sleep(Duration::from_micros(1));
-            let mut v: Vec<i32> = Vec::with_capacity(1_000_000);
-            for i in 0..1_000_000 {
+            let mut v: Vec<i32> = Vec::with_capacity(10_000);
+            for i in 0..10_000 {
                 v.push(black_box(i));
             }
             v
         },
-        |mut v| {
+        |v| {
             let mut sum = 0;
             for i in black_box(v) {
                 sum += black_box(i);
