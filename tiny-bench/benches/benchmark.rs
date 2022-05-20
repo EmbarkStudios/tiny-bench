@@ -43,8 +43,5 @@ fn bench_test_two() {
 }
 
 fn bench_test_three() {
-    tiny_bench::bench_labeled("test three, empty", || {
-        let a = black_box(5);
-        assert_eq!(black_box(a), black_box(5));
-    })
+    tiny_bench::bench_labeled("test three, empty", || {})
 }
