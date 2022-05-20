@@ -15,7 +15,7 @@ impl Rng {
         // TODO: Find something less stupid
         let seed = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
         Rng {
-            // And maybe check for overflows
+            // And maybe check for overflows. Note: No we're good until about year 2554
             seed: seed.as_nanos() as u64,
         }
     }
