@@ -10,6 +10,7 @@ use std::time::Duration;
 ///
 /// This variant is stable-compatible, but it may cause some performance overhead
 /// or fail to prevent code from being eliminated.
+#[allow(unsafe_code)]
 pub fn black_box<T>(dummy: T) -> T {
     unsafe {
         let ret = std::ptr::read_volatile(&dummy);
@@ -78,7 +79,7 @@ pub(crate) fn calculate_iterations(
         );
     }
 
-    (1..(sample_size + 1) as u64).map(|a| a * d).collect()
+    (1..=sample_size).map(|a| a * d).collect()
 }
 
 pub(crate) fn test_t_between_samples(a: &[f64], b: &[f64]) -> f64 {

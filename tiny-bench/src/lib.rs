@@ -3,6 +3,7 @@
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::cast_sign_loss)]
+#![deny(unsafe_code)]
 
 #[cfg(feature = "bench")]
 pub(crate) mod benching;
