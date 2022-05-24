@@ -13,8 +13,10 @@ use crate::output::analysis::sample_data::simple_analyze_sampling_data;
 #[cfg(feature = "timer")]
 use crate::timing::TimingData;
 
+/// Percentage increase which is deemed to be big enough to matter.
+/// Only used for highlighting output
 #[cfg(feature = "timer")]
-const DEFAULT_TIMING_THRESHOLD: f64 = 5.0;
+const TIMING_NOISE_THRESHOLD: f64 = 5.0;
 
 /// Percentage increase which is deemed to be big enough to matter.
 /// Only used for highlighting output
@@ -104,9 +106,9 @@ impl Output for ComparedStdout {
                 let max_change = (data.max_nanos as f64 / old.max_nanos as f64 - 1f64) * 100f64;
                 let mean_change =
                     (mean / (old.elapsed as f64 / old.iterations as f64) - 1f64) * 100f64;
-                let mean_comparison = if mean_change >= DEFAULT_TIMING_THRESHOLD {
+                let mean_comparison = if mean_change >= TIMING_NOISE_THRESHOLD {
                     MeanComparison::new(mean_change, Comparison::Better)
-                } else if mean_change <= -DEFAULT_TIMING_THRESHOLD {
+                } else if mean_change <= -TIMING_NOISE_THRESHOLD {
                     MeanComparison::new(mean_change, Comparison::Worse)
                 } else {
                     MeanComparison::new(mean_change, Comparison::Same)
@@ -312,5 +314,32 @@ pub(crate) fn fmt_num(num: f64) -> String {
         format!("{:.1}M", num / MICRO_LIMIT)
     } else {
         format!("{:.1}B", num / MILLI_LIMIT)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::output::{fmt_change, fmt_num, fmt_time};
+
+    #[test]
+    fn formats_time() {
+        assert_eq!("5.15ns", &fmt_time(5.15));
+        assert_eq!("1.50µs", &fmt_time(1500.0));
+        assert_eq!("3.33ms", &fmt_time(3_330_000.0));
+        assert_eq!("5.79s", &fmt_time(5_790_000_000.0));
+        assert_eq!("68.00s", &fmt_time(68_000_000_000.0));
+    }
+
+    #[test]
+    fn formats_number() {
+        assert_eq!("5.1", &fmt_num(5.1));
+        assert_eq!("35.0 thousand", &fmt_num(35_000.0));
+        assert_eq!("97.0M", &fmt_num(97_000_000.0));
+        assert_eq!("7.9B", &fmt_num(7_900_000_000.0));
+    }
+
+    #[test]
+    fn formats_change() {
+        assert_eq!("5.1973%", &fmt_change(5.1973));
     }
 }
