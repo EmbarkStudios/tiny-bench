@@ -27,7 +27,7 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
     );
     let wu = run_warm_up(&mut closure, cfg.warm_up_time);
     let mean_execution_time = wu.elapsed.as_nanos() as f64 / wu.iterations as f64;
-    let sample_size = cfg.sample_size as u64;
+    let sample_size = cfg.num_samples as u64;
     let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
     let mut total_iters = 0u128;
     for count in iters.iter().copied() {
@@ -109,7 +109,7 @@ pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut()
     let wu = run_warm_up(&mut wu_routine, cfg.warm_up_time);
     let mean_execution_time = wu.elapsed.as_nanos() as f64 / wu.iterations as f64;
 
-    let sample_size = cfg.sample_size as u64;
+    let sample_size = cfg.num_samples as u64;
     let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
     let mut total_iters = 0u128;
     for count in iters.iter().copied() {

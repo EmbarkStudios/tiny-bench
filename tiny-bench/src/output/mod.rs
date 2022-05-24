@@ -6,7 +6,7 @@ pub(crate) mod ser;
 use crate::benching::SamplingData;
 #[cfg(feature = "bench")]
 use crate::output::analysis::criterion::{
-    calculate_p_value, resample, test_t_between_samples, BenchmarkConfig,
+    calculate_p_value, calculate_t_value, resample, BenchmarkConfig,
 };
 #[cfg(feature = "bench")]
 use crate::output::analysis::sample_data::simple_analyze_sampling_data;
@@ -15,6 +15,16 @@ use crate::timing::TimingData;
 
 #[cfg(feature = "timer")]
 const DEFAULT_TIMING_THRESHOLD: f64 = 5.0;
+
+/// Percentage increase which is deemed to be big enough to matter.
+/// Only used for highlighting output
+#[cfg(feature = "bench")]
+const NOISE_THRESHOLD: f64 = 1.0;
+
+/// p-value under which a result is deemed significant enough to matter.
+/// Only used for highlighting output
+#[cfg(feature = "bench")]
+const SIGNIFICANCE_LEVEL: f64 = 0.05;
 
 #[cfg(feature = "timer")]
 pub(crate) struct LabeledOutput<Output> {
@@ -73,7 +83,7 @@ impl Output for SimpleStdout {
         total_iters: u128,
     ) {
         let analysis = simple_analyze_sampling_data(sampling_data);
-        print_sample_header(label, total_iters, analysis.elapsed, cfg.sample_size as u64);
+        print_sample_header(label, total_iters, analysis.elapsed, cfg.num_samples as u64);
         print_elapsed(analysis.max, analysis.average, analysis.max);
     }
 }
@@ -128,7 +138,7 @@ impl Output for ComparedStdout {
         total_iters: u128,
     ) {
         let analysis = simple_analyze_sampling_data(sampling_data);
-        print_sample_header(label, total_iters, analysis.elapsed, cfg.sample_size as u64);
+        print_sample_header(label, total_iters, analysis.elapsed, cfg.num_samples as u64);
         print_elapsed(analysis.max, analysis.average, analysis.max);
         match disk::try_read_last_simpling(label) {
             Ok(Some(last)) => {
@@ -136,7 +146,7 @@ impl Output for ComparedStdout {
                 let min_change = (analysis.min / old_analysis.min - 1f64) * 100f64;
                 let max_change = (analysis.max / old_analysis.max - 1f64) * 100f64;
                 let mean_change = (analysis.average / old_analysis.average - 1f64) * 100f64;
-                let t = test_t_between_samples(
+                let t = calculate_t_value(
                     &analysis.per_sample_average,
                     &old_analysis.per_sample_average,
                 );
@@ -146,8 +156,7 @@ impl Output for ComparedStdout {
                     100,
                 );
                 let p = calculate_p_value(t, &t_distribution);
-                let mean_change = if mean_change.abs() >= cfg.noise_threshold * 100f64
-                    && p <= cfg.significance_level
+                let mean_change = if mean_change.abs() >= NOISE_THRESHOLD && p <= SIGNIFICANCE_LEVEL
                 {
                     if mean_change > 0.0 {
                         MeanComparison::new(mean_change, Comparison::Worse)
