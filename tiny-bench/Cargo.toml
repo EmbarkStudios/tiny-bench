@@ -3,8 +3,9 @@ name = "tiny-bench"
 version = "0.1.0"
 edition = "2021"
 authors = ["Embark <opensource@embark-studios.com>"]
-license = "MIT"
-publish = false
+license = "MIT OR Apache-2.0"
+description = "A tiny benchmarking library"
+readme = "Readme.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
