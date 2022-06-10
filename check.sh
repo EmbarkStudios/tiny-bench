@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -ex
 # Deny all warnings here, becomes a pain to scroll back otherwise
 cargo hack clippy --feature-powerset -- -D warnings

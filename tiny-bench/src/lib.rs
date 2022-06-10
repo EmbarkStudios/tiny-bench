@@ -5,10 +5,10 @@
 #![allow(clippy::cast_sign_loss)]
 #![deny(unsafe_code)]
 #![deny(missing_docs)]
-//! `tiny-bench` a tiny benchmarking library.
-//! The crate is divided into two sections, benchmarking and timing
+//! `tiny-bench`, a tiny benchmarking library.
+//! The crate is divided into two sections, benchmarking and timing.
 //! Benchmarking provides tools to measure code execution, show statistics about that execution,
-//! and compare those statistics to previous runs
+//! and compare those statistics to previous runs.
 //! Timing provides tools to time code. Timing how long a closure runs, or how long an iterator runs.
 
 #[cfg(feature = "bench")]
