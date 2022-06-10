@@ -1,2 +1,38 @@
+[advisories]
+vulnerability = "deny"
+unmaintained = "warn"
+yanked = "deny"
+ignore = []
+
+[bans]
+multiple-versions = "deny"
+deny = []
+
+skip = []
+skip-tree = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+required-git-spec = "rev"
+allow-registry = []
+allow-git = []
+
+[sources.allow-org]
+github = []
+
 [licenses]
 private = { ignore = true, registries = ["embark"] }
+unlicensed = "deny"
+allow-osi-fsf-free = "neither"
+# We want really high confidence when inferring licenses from text
+confidence-threshold = 0.92
+copyleft = "deny"
+allow = [
+    "Apache-2.0",                     # https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)
+    "MIT",                            # https://tldrlegal.com/license/mit-license
+]
+
+# exceptions to our standard allowed licenses
+# be very careful about adding items here and make sure it is properly reviewed
+exceptions = []
