@@ -1,11 +1,10 @@
-on: public
-# on:
-#   push:
-#     branches:
-#       - main
-#     tags:
-#       - "*"
-#   pull_request:
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+  pull_request:
 
 name: CI
 jobs:
