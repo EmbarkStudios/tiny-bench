@@ -18,7 +18,7 @@ fn bench_test_one() {
             sum += black_box(i);
         }
         assert!(sum >= black_box(1));
-    })
+    });
 }
 
 fn bench_test_two() {
@@ -39,9 +39,9 @@ fn bench_test_two() {
             }
             assert!(sum >= black_box(1));
         },
-    )
+    );
 }
 
 fn bench_test_three() {
-    tiny_bench::bench_labeled("test three, empty", || {})
+    tiny_bench::bench_labeled("test three, empty", || {});
 }

@@ -9,7 +9,7 @@ pub fn main() {
         })
         .timed()
         .max();
-    assert_eq!(99, v.unwrap())
+    assert_eq!(99, v.unwrap());
 }
 
 fn my_expensive_call() {

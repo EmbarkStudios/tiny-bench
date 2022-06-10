@@ -5,9 +5,10 @@ fn main() {
     tiny_bench::bench_with_configuration(&BenchmarkConfig::default(), || {
         let sorted = bad_sort(v.clone());
         assert_eq!(vec![3, 5, 5, 7, 8, 10], sorted);
-    })
+    });
 }
 
+#[allow(clippy::needless_range_loop)]
 fn bad_sort(mut v: Vec<u32>) -> Vec<u32> {
     let mut sorted = Vec::with_capacity(v.len());
     while !v.is_empty() {
