@@ -1,5 +1,8 @@
 use crate::output::analysis::criterion::calculate_iterations;
-use crate::output::{fmt_num, fmt_time, wrap_bold_green, wrap_high_intensity_white, Output};
+use crate::output::{
+    fallback_to_anonymous_on_invalid_label, fmt_num, fmt_time, wrap_bold_green,
+    wrap_high_intensity_white, Output,
+};
 use crate::{black_box, BenchmarkConfig};
 use std::time::{Duration, Instant};
 
@@ -7,26 +10,55 @@ use std::time::{Duration, Instant};
 /// Will persist results under the anonymous label which is shared, making comparisons impossible
 /// if running more than one (different) benchmark on the same project, ie. benching two different
 /// functions
+/// ```no_run
+/// use tiny_bench::bench;
+/// bench(|| {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench<T, F: FnMut() -> T>(closure: F) {
     bench_with_configuration(&BenchmarkConfig::default(), closure);
 }
 
 /// Will run the closure with a label, running with a label enables comparisons for subsequent runs.
+/// ```no_run
+/// use tiny_bench::bench_labeled;
+/// bench_labeled("my_benchmark", || {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_labeled<T, F: FnMut() -> T>(label: &'static str, closure: F) {
     bench_with_configuration_labeled(label, &BenchmarkConfig::default(), closure);
 }
 
 /// Will run the benchmark with the supplied configuration
+/// ```no_run
+/// use std::time::Duration;
+/// use tiny_bench::{bench_with_configuration, BenchmarkConfig};
+/// bench_with_configuration(&BenchmarkConfig {
+///     measurement_time: Duration::from_secs(10),
+///     ..BenchmarkConfig::default()
+/// }, || {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_with_configuration<T, F: FnMut() -> T>(cfg: &BenchmarkConfig, closure: F) {
     bench_with_configuration_labeled("anonymous", cfg, closure);
 }
 
 /// Will run the benchmark with the supplied configuration and a label
+/// ```no_run
+/// use tiny_bench::{bench_with_configuration_labeled, BenchmarkConfig};
+/// bench_with_configuration_labeled("my_benchmark", &BenchmarkConfig::default(), || {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
     label: &'static str,
     cfg: &BenchmarkConfig,
     mut closure: F,
 ) {
+    let label = fallback_to_anonymous_on_invalid_label(label);
     println!(
         "{} warming up for {}",
         wrap_bold_green(label),
@@ -74,6 +106,12 @@ fn run<T, F: FnMut() -> T>(sample_sizes: Vec<u64>, mut closure: F) -> SamplingDa
 
 /// Fitting if some setup for the benchmark is required, and that setup should not be timed.
 /// The setup will be run prior to each benchmarking run.
+/// ```no_run
+/// use tiny_bench::{bench_with_configuration_labeled, BenchmarkConfig};
+/// bench_with_configuration_labeled("my_benchmark", &BenchmarkConfig::default(), || {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(setup: S, closure: F) {
     bench_with_setup_configuration_labeled(
         "anonymous",
@@ -84,6 +122,13 @@ pub fn bench_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(setup: S, closu
 }
 
 /// Run bench with setup and a label
+/// ```no_run
+/// use std::time::Duration;
+/// use tiny_bench::{bench_with_setup_labeled, BenchmarkConfig};
+/// bench_with_setup_labeled("my_benchmark", || std::thread::sleep(Duration::from_micros(5)), |_| {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_with_setup_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     label: &'static str,
     setup: S,
@@ -93,6 +138,13 @@ pub fn bench_with_setup_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
 }
 
 /// Run bench with setup and configuration
+/// ```no_run
+/// use std::time::Duration;
+/// use tiny_bench::{bench_with_setup_configuration, BenchmarkConfig};
+/// bench_with_setup_configuration(&BenchmarkConfig::default(), || std::thread::sleep(Duration::from_micros(5)), |_| {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_with_setup_configuration<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     cfg: &BenchmarkConfig,
     setup: S,
@@ -102,12 +154,20 @@ pub fn bench_with_setup_configuration<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
 }
 
 /// Run bench with setup, configuration, and a label
+/// ```no_run
+/// use std::time::Duration;
+/// use tiny_bench::{bench_with_setup_configuration_labeled, BenchmarkConfig};
+/// bench_with_setup_configuration_labeled("my_benchmark", &BenchmarkConfig::default(), || std::thread::sleep(Duration::from_micros(5)), |_| {
+///     // Some code that should be benched
+/// })
+/// ```
 pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     label: &'static str,
     cfg: &BenchmarkConfig,
     mut setup: S,
     mut closure: F,
 ) {
+    let label = fallback_to_anonymous_on_invalid_label(label);
     let mut wu_routine = || {
         let input = (setup)();
         (closure)(input);
@@ -204,14 +264,6 @@ pub(crate) struct SamplingData {
 mod tests {
     use super::*;
     use std::time::Duration;
-
-    #[test]
-    fn warms_up() {
-        let mut wu_closure = || std::thread::sleep(Duration::from_millis(1));
-        let results = run_warm_up(&mut wu_closure, Duration::from_millis(10));
-        // Kinda brittle
-        assert!(9 <= results.iterations);
-    }
 
     #[test]
     fn benches() {

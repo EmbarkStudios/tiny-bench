@@ -3,7 +3,6 @@
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::cast_sign_loss)]
-#![deny(unsafe_code)]
 #![deny(missing_docs)]
 //! `tiny-bench`, a tiny benchmarking library.
 //! The crate is divided into two sections, benchmarking and timing.

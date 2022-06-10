@@ -12,7 +12,6 @@ pub(crate) struct Rng {
 
 impl Rng {
     pub(crate) fn new() -> Self {
-        // TODO: Find something less stupid
         let seed = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
         Rng {
             // And maybe check for overflows. Note: No we're good until about year 2554

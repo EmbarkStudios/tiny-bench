@@ -1,5 +1,7 @@
 use crate::output;
-use crate::output::{ComparedStdout, LabeledOutput, Output, SimpleStdout};
+use crate::output::{
+    fallback_to_anonymous_on_invalid_label, ComparedStdout, LabeledOutput, Output, SimpleStdout,
+};
 use std::time::{Duration, Instant};
 
 /// The simplest possible timed function that just runs some `FnMut` closure and returns the time it took
@@ -167,11 +169,20 @@ where
     It: Iterator<Item = T>,
 {
     fn timed_labeled(self, label: &'static str) -> TimedIterator<It, T, SimpleStdout> {
-        TimedIterator::new(self, LabeledOutput::new(label, SimpleStdout))
+        TimedIterator::new(
+            self,
+            LabeledOutput::new(fallback_to_anonymous_on_invalid_label(label), SimpleStdout),
+        )
     }
 
     fn timed_persisted_labeled(self, label: &'static str) -> TimedIterator<It, T, ComparedStdout> {
-        TimedIterator::new(self, LabeledOutput::new(label, ComparedStdout))
+        TimedIterator::new(
+            self,
+            LabeledOutput::new(
+                fallback_to_anonymous_on_invalid_label(label),
+                ComparedStdout,
+            ),
+        )
     }
 }
 

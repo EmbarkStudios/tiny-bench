@@ -10,6 +10,13 @@ use std::time::Duration;
 ///
 /// This variant is stable-compatible, but it may cause some performance overhead
 /// or fail to prevent code from being eliminated.
+///
+/// ```
+/// use tiny_bench::black_box;
+/// for i in 0..10 {
+///     assert_eq!(i, black_box(i));
+/// }
+/// ```
 #[allow(unsafe_code)]
 pub fn black_box<T>(dummy: T) -> T {
     unsafe {

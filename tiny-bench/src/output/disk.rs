@@ -144,7 +144,6 @@ fn find_or_create_result_parent_dir(label: &'static str) -> Result<PathBuf> {
     }
     let all_results_dir = pb.join("simple-bench");
 
-    // TODO: Illegal label names will cause problems, ie / on linux
     let result_parent_dir = all_results_dir.join(label);
 
     std::fs::create_dir_all(&result_parent_dir).map_err(|e| {

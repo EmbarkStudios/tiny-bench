@@ -317,9 +317,118 @@ pub(crate) fn fmt_num(num: f64) -> String {
     }
 }
 
+/// Some illegal filename symbols, not meant to be exhaustive but good enough
+const ILLEGAL: [char; 10] = [
+    // Linux
+    '/', '\0', // Windows
+    ':', '<', '>', '"', '\\', '|', '?', '*',
+];
+
+#[cfg_attr(test, derive(Eq, PartialEq, Debug))]
+pub(crate) enum LabelValidationResult {
+    Valid,
+    Invalid(&'static str),
+}
+
+pub(crate) fn fallback_to_anonymous_on_invalid_label(label: &'static str) -> &'static str {
+    if let LabelValidationResult::Invalid(reason) = validate_label(label) {
+        println!(
+            "{} falling back to 'anonymous'.",
+            wrap_high_insensity_red(reason)
+        );
+        "anonymous"
+    } else {
+        label
+    }
+}
+
+fn validate_label(label: &'static str) -> LabelValidationResult {
+    for ch in ILLEGAL {
+        if label.contains(ch) {
+            return LabelValidationResult::Invalid("Label contains illegal character {ch}");
+        }
+    }
+    for ch in 0..32 {
+        let ascii_ctrl = char::from(ch);
+        if label.contains(ascii_ctrl) {
+            return LabelValidationResult::Invalid(
+                "Label contains illegal ascii-control character number {ch}",
+            );
+        }
+    }
+    if label.ends_with('.') {
+        return LabelValidationResult::Invalid("Label cannot end with dot");
+    }
+    if label.ends_with(' ') {
+        return LabelValidationResult::Invalid("Label cannot end with a space");
+    }
+    LabelValidationResult::Valid
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::output::{fmt_change, fmt_num, fmt_time};
+    use crate::output::{fmt_change, fmt_num, fmt_time, validate_label, LabelValidationResult};
+
+    #[test]
+    fn validates_label() {
+        assert_eq!(LabelValidationResult::Valid, validate_label("Hello!"));
+        assert_eq!(
+            LabelValidationResult::Valid,
+            validate_label("Some,weird_name_but.okay.png")
+        );
+        assert!(matches!(
+            validate_label("."),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("hello!."),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("hello! "),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad/label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad:label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad>label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad<label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad\0label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad\\label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad\"label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad|label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad?label"),
+            LabelValidationResult::Invalid(_)
+        ));
+        assert!(matches!(
+            validate_label("bad*label"),
+            LabelValidationResult::Invalid(_)
+        ));
+    }
 
     #[test]
     fn formats_time() {
