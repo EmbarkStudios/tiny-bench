@@ -95,18 +95,24 @@ where
     }
 }
 
+/// Data collected after a timed run
 #[derive(Copy, Clone, Debug)]
 #[cfg(feature = "timer")]
 #[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct TimingData {
+    /// The last amount of time elapsed for an iteration
     pub min_nanos: u128,
+    /// The most amount of time elapsed for an iteration
     pub max_nanos: u128,
+    /// The total elapsed time for all iterations combined
     pub elapsed: u128,
+    /// How many iterations were ran
     pub iterations: u128,
 }
 
 #[cfg(feature = "timer")]
 impl TimingData {
+    /// Print the data with pretty colors to stdout
     pub fn pretty_print(&self) {
         output::print_timer_header("anonymous", self);
         output::print_elapsed(
@@ -169,6 +175,7 @@ where
     }
 }
 
+/// An iterator that wraps another iterator and times each call to `next`
 pub struct TimedIterator<It, T, O>
 where
     It: Iterator<Item = T>,

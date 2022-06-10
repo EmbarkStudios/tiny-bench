@@ -21,27 +21,29 @@ pub fn black_box<T>(dummy: T) -> T {
 
 /// Struct containing all of the configuration options for a benchmark.
 pub struct BenchmarkConfig {
+    /// How long the bench 'should' run, `num_samples` is prioritized so benching will take
+    /// longer to be able to collect `num_samples` if the code to be benched is slower
+    /// than this time limit allowed.
     pub measurement_time: Duration,
+    /// How many resamples should be done
     pub num_resamples: usize,
+    /// Recommended at least 50, above 100 <https://en.wikipedia.org/wiki/Bootstrapping_(statistics)#Recommendations>
+    /// doesn't seem to yield a significantly different result
     pub num_samples: usize,
+    /// How long the bench should warm up
     pub warm_up_time: Duration,
+    /// Puts results in target/tiny-bench/label/.. if target can be found.
+    /// used for comparing previous runs
     pub dump_results_to_disk: bool,
 }
 
 impl Default for BenchmarkConfig {
     fn default() -> Self {
         BenchmarkConfig {
-            /// How long the bench 'should' run, `num_samples` is prioritized so benching will take
-            /// longer to be able to collect `num_samples` if the code to be benched is slower
-            /// than this time limit allowed.
             measurement_time: Duration::from_secs(5),
             num_resamples: 100_000,
-            /// Recommended at least 50, above 100 https://en.wikipedia.org/wiki/Bootstrapping_(statistics)#Recommendations
-            /// doesn't seem to yield a significantly different result
             num_samples: 100,
             warm_up_time: Duration::from_secs(3),
-            /// Puts results in target/tiny-bench/label/.. if target can be found.
-            /// used for comparing previous runs
             dump_results_to_disk: true,
         }
     }

@@ -3,18 +3,25 @@ use crate::output::{fmt_num, fmt_time, wrap_bold_green, wrap_high_intensity_whit
 use crate::{black_box, BenchmarkConfig};
 use std::time::{Duration, Instant};
 
+/// Will run the closure and print statistics from the benchmarking to stdout.
+/// Will persist results under the anonymous label which is shared, making comparisons impossible
+/// if running more than one (different) benchmark on the same project, ie. benching two different
+/// functions
 pub fn bench<T, F: FnMut() -> T>(closure: F) {
     bench_with_configuration(&BenchmarkConfig::default(), closure);
 }
 
+/// Will run the closure with a label, running with a label enables comparisons for subsequent runs.
 pub fn bench_labeled<T, F: FnMut() -> T>(label: &'static str, closure: F) {
     bench_with_configuration_labeled(label, &BenchmarkConfig::default(), closure);
 }
 
+/// Will run the benchmark with the supplied configuration
 pub fn bench_with_configuration<T, F: FnMut() -> T>(cfg: &BenchmarkConfig, closure: F) {
     bench_with_configuration_labeled("anonymous", cfg, closure);
 }
 
+/// Will run the benchmark with the supplied configuration and a label
 pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
     label: &'static str,
     cfg: &BenchmarkConfig,
@@ -65,7 +72,8 @@ fn run<T, F: FnMut() -> T>(sample_sizes: Vec<u64>, mut closure: F) -> SamplingDa
     }
 }
 
-/// If you have some heavy setup operation to generate input for the bench
+/// Fitting if some setup for the benchmark is required, and that setup should not be timed.
+/// The setup will be run prior to each benchmarking run.
 pub fn bench_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(setup: S, closure: F) {
     bench_with_setup_configuration_labeled(
         "anonymous",
@@ -75,6 +83,7 @@ pub fn bench_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(setup: S, closu
     );
 }
 
+/// Run bench with setup and a label
 pub fn bench_with_setup_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     label: &'static str,
     setup: S,
@@ -83,6 +92,7 @@ pub fn bench_with_setup_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     bench_with_setup_configuration_labeled(label, &BenchmarkConfig::default(), setup, closure);
 }
 
+/// Run bench with setup and configuration
 pub fn bench_with_setup_configuration<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     cfg: &BenchmarkConfig,
     setup: S,
@@ -91,6 +101,7 @@ pub fn bench_with_setup_configuration<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     bench_with_setup_configuration_labeled("anonymous", cfg, setup, closure);
 }
 
+/// Run bench with setup, configuration, and a label
 pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     label: &'static str,
     cfg: &BenchmarkConfig,
