@@ -5,7 +5,10 @@ edition = "2021"
 authors = ["Embark <opensource@embark-studios.com>"]
 license = "MIT OR Apache-2.0"
 description = "A tiny benchmarking library"
-readme = "Readme.md"
+readme = "../README.md"
+homepage = "https://github.com/EmbarkStudios/tiny-bench"
+repository = "https://github.com/EmbarkStudios/tiny-bench"
+keywords = ["benchmarking"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
