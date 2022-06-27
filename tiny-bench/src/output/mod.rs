@@ -86,7 +86,7 @@ impl Output for SimpleStdout {
     ) {
         let analysis = simple_analyze_sampling_data(sampling_data);
         print_sample_header(label, total_iters, analysis.elapsed, cfg.num_samples as u64);
-        print_elapsed(analysis.max, analysis.average, analysis.max);
+        print_elapsed(analysis.min, analysis.average, analysis.max);
     }
 }
 
@@ -141,7 +141,7 @@ impl Output for ComparedStdout {
     ) {
         let analysis = simple_analyze_sampling_data(sampling_data);
         print_sample_header(label, total_iters, analysis.elapsed, cfg.num_samples as u64);
-        print_elapsed(analysis.max, analysis.average, analysis.max);
+        print_elapsed(analysis.min, analysis.average, analysis.max);
         match disk::try_read_last_simpling(label) {
             Ok(Some(last)) => {
                 let old_analysis = simple_analyze_sampling_data(&last);
