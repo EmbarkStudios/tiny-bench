@@ -10,7 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
-## [0.1.0] - TBD
+## [0.1.1] - 2022-08-19
+### Fixed
+- Fix results display showing max instead of min; thanks @lqd!
+
+## [0.1.0] - 2022-06-10
 ### Added
 - A tiny benchmarker
 - A tiny timer
