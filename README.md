@@ -56,6 +56,13 @@ may be better suited for that.
 Lastly, if you want an even smaller benchmarking library, check
 out [benchmark-simple](https://github.com/jedisct1/rust-benchmark-simple).
 
+## Unimplemented
+
+There is no arg-parsing or bench-matching in this library, so you can't run cargo bench <test-matcher>.
+Instead, the user needs to put different benches into functions, and add/remove those functions from bench main.
+The reason for this is that those libraries are heavy-weight and would likely require some macros to
+select which benches to run which decreases readability and understandability.
+
 ## Examples
 
 ### Getting a hint of what parts of your application take time
@@ -183,7 +190,9 @@ We welcome community contributions to this project.
 Please read our [Contributor Guide](CONTRIBUTING.md) for more information on how to get started.
 Please also read our [Contributor Terms](CONTRIBUTING.md#contributor-terms) before you make any contributions.
 
-Any contribution intentionally submitted for inclusion in an Embark Studios project, shall comply with the Rust standard licensing model (MIT OR Apache 2.0) and therefore be dual licensed as described below, without any additional terms or conditions:
+Any contribution intentionally submitted for inclusion in an Embark Studios project, shall comply with the Rust standard
+licensing model (MIT OR Apache 2.0) and therefore be dual licensed as described below, without any additional terms or
+conditions:
 
 ### License
 
