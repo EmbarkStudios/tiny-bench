@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::time::Duration;
 use tiny_bench::black_box;
 

@@ -142,6 +142,7 @@ pub(crate) struct SamplingDataSimpleAnalysis {
     pub(crate) min: f64,
     pub(crate) max: f64,
     pub(crate) average: f64,
+    pub(crate) variance: f64,
     pub(crate) per_sample_average: Vec<f64>,
 }
 

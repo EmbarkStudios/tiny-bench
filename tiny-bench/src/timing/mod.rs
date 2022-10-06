@@ -121,6 +121,7 @@ impl TimingData {
             self.min_nanos as f64,
             self.elapsed as f64 / self.iterations as f64,
             self.max_nanos as f64,
+            0.0,
         );
     }
 }

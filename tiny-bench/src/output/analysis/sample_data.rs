@@ -1,5 +1,5 @@
 use crate::benching::SamplingData;
-use crate::output::analysis::criterion::SamplingDataSimpleAnalysis;
+use crate::output::analysis::criterion::{calculate_variance, SamplingDataSimpleAnalysis};
 
 pub(crate) fn simple_analyze_sampling_data(
     sampling_data: &SamplingData,
@@ -27,11 +27,13 @@ pub(crate) fn simple_analyze_sampling_data(
         total_elapsed += elapsed_nanos;
     }
     let total_average = total / sampling_data.samples.len() as f64;
+    let variance = calculate_variance(&sample_averages, total_average);
     SamplingDataSimpleAnalysis {
         elapsed: total_elapsed,
         min,
         max,
         average: total_average,
+        variance,
         per_sample_average: sample_averages,
     }
 }
