@@ -58,6 +58,12 @@ out [benchmark-simple](https://github.com/jedisct1/rust-benchmark-simple).
 
 ## Unimplemented
 
+There are a few statistical measures that would be nice to have but are limited by the methods used by this library.  
+Since it potentially runs billions of iterations, calculating statistics based on seeing all iterations such as median,
+standard deviation, and percentiles are not feasible without caching data to disk.
+Therefore, measures like variance, or median are prefixed by "sample" as they are not related to individual iteration times, 
+but a comparison between samples.
+
 There is no arg-parsing or bench-matching in this library, so you can't run cargo bench <test-matcher>.
 Instead, the user needs to put different benches into functions, and add/remove those functions from bench main.
 The reason for this is that those libraries are heavy-weight and would likely require some macros to

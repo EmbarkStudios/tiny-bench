@@ -137,11 +137,18 @@ pub(crate) fn calculate_p_value(total_t: f64, distribution: &[f64]) -> f64 {
     (min * tails) as f64 / distribution.len() as f64
 }
 
+#[inline]
+pub(crate) fn calculate_median(sample: &mut Vec<f64>) -> f64 {
+    sample.sort_by(f64::total_cmp);
+    sample.get(sample.len() / 2).copied().unwrap_or_default()
+}
+
 pub(crate) struct SamplingDataSimpleAnalysis {
     pub(crate) elapsed: u128,
     pub(crate) min: f64,
     pub(crate) max: f64,
     pub(crate) average: f64,
+    pub(crate) median: f64,
     pub(crate) variance: f64,
     pub(crate) per_sample_average: Vec<f64>,
 }

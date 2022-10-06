@@ -73,7 +73,7 @@ impl Output for SimpleStdout {
     fn dump_timing_data(&self, label: &'static str, data: TimingData) {
         print_timer_header(label, &data);
         let mean = data.elapsed as f64 / data.iterations as f64;
-        print_elapsed(data.min_nanos as f64, mean, data.max_nanos as f64, 0.0);
+        timer_print_elapsed(data.min_nanos as f64, mean, data.max_nanos as f64);
     }
 
     #[cfg(feature = "bench")]
@@ -91,6 +91,7 @@ impl Output for SimpleStdout {
             analysis.average,
             analysis.max,
             analysis.variance,
+            analysis.median,
         );
     }
 }
@@ -104,7 +105,7 @@ impl Output for ComparedStdout {
         let mean = data.elapsed as f64 / data.iterations as f64;
         let maybe_old = disk::try_read_last_results(label);
         print_timer_header(label, &data);
-        print_elapsed(data.min_nanos as f64, mean, data.max_nanos as f64, 0.0);
+        timer_print_elapsed(data.min_nanos as f64, mean, data.max_nanos as f64);
         match maybe_old {
             Ok(Some(old)) => {
                 let min_change = (data.min_nanos as f64 / old.min_nanos as f64 - 1f64) * 100f64;
@@ -151,6 +152,7 @@ impl Output for ComparedStdout {
             analysis.average,
             analysis.max,
             analysis.variance,
+            analysis.median,
         );
         match disk::try_read_last_simpling(label) {
             Ok(Some(last)) => {
@@ -221,10 +223,11 @@ pub(crate) fn print_sample_header(
     );
 }
 
-pub(crate) fn print_elapsed(min: f64, mean: f64, max: f64, variance: f64) {
+#[cfg(feature = "bench")]
+pub(crate) fn print_elapsed(min: f64, mean: f64, max: f64, variance: f64, median: f64) {
     // Variance has the unit T-squared,
     println!(
-        "\telapsed\t[{} {} {}]:\t[{} {} {}] (var = {}²)",
+        "\telapsed\t[{} {} {}]:\t[{} {} {}] (sample variance = {}², sample median = {})",
         wrap_gray("min"),
         wrap_high_intensity_white("mean"),
         wrap_gray("max"),
@@ -232,6 +235,21 @@ pub(crate) fn print_elapsed(min: f64, mean: f64, max: f64, variance: f64) {
         wrap_high_intensity_white(&fmt_time(mean)),
         wrap_gray(&fmt_time(max)),
         fmt_time(variance),
+        fmt_time(median),
+    );
+}
+
+#[cfg(feature = "timer")]
+pub(crate) fn timer_print_elapsed(min: f64, mean: f64, max: f64) {
+    // Variance has the unit T-squared,
+    println!(
+        "\telapsed\t[{} {} {}]:\t[{} {} {}])",
+        wrap_gray("min"),
+        wrap_high_intensity_white("mean"),
+        wrap_gray("max"),
+        wrap_gray(&fmt_time(min)),
+        wrap_high_intensity_white(&fmt_time(mean)),
+        wrap_gray(&fmt_time(max)),
     );
 }
 

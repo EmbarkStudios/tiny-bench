@@ -1,5 +1,7 @@
 use crate::benching::SamplingData;
-use crate::output::analysis::criterion::{calculate_variance, SamplingDataSimpleAnalysis};
+use crate::output::analysis::criterion::{
+    calculate_median, calculate_variance, SamplingDataSimpleAnalysis,
+};
 
 pub(crate) fn simple_analyze_sampling_data(
     sampling_data: &SamplingData,
@@ -26,6 +28,7 @@ pub(crate) fn simple_analyze_sampling_data(
         total += sample_average;
         total_elapsed += elapsed_nanos;
     }
+    let median = calculate_median(&mut sample_averages);
     let total_average = total / sampling_data.samples.len() as f64;
     let variance = calculate_variance(&sample_averages, total_average);
     SamplingDataSimpleAnalysis {
@@ -33,6 +36,7 @@ pub(crate) fn simple_analyze_sampling_data(
         min,
         max,
         average: total_average,
+        median,
         variance,
         per_sample_average: sample_averages,
     }
