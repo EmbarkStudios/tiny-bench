@@ -90,8 +90,9 @@ impl Output for SimpleStdout {
             analysis.min,
             analysis.average,
             analysis.max,
-            analysis.variance,
             analysis.median,
+            analysis.variance,
+            analysis.stddev,
         );
     }
 }
@@ -151,8 +152,9 @@ impl Output for ComparedStdout {
             analysis.min,
             analysis.average,
             analysis.max,
-            analysis.variance,
             analysis.median,
+            analysis.variance,
+            analysis.stddev,
         );
         match disk::try_read_last_simpling(label) {
             Ok(Some(last)) => {
@@ -224,18 +226,26 @@ pub(crate) fn print_sample_header(
 }
 
 #[cfg(feature = "bench")]
-pub(crate) fn print_elapsed(min: f64, mean: f64, max: f64, variance: f64, median: f64) {
+pub(crate) fn print_elapsed(
+    min: f64,
+    mean: f64,
+    max: f64,
+    median: f64,
+    variance: f64,
+    stddev: f64,
+) {
     // Variance has the unit T-squared,
     println!(
-        "\telapsed\t[{} {} {}]:\t[{} {} {}] (sample variance = {}², sample median = {})",
+        "\telapsed\t[{} {} {}]:\t[{} {} {}] (sample data: med = {}, var = {}², stddev = {})",
         wrap_gray("min"),
         wrap_high_intensity_white("mean"),
         wrap_gray("max"),
         wrap_gray(&fmt_time(min)),
         wrap_high_intensity_white(&fmt_time(mean)),
         wrap_gray(&fmt_time(max)),
-        fmt_time(variance),
         fmt_time(median),
+        fmt_time(variance),
+        fmt_time(stddev),
     );
 }
 

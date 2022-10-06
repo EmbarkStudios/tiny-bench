@@ -31,6 +31,7 @@ pub(crate) fn simple_analyze_sampling_data(
     let median = calculate_median(&mut sample_averages);
     let total_average = total / sampling_data.samples.len() as f64;
     let variance = calculate_variance(&sample_averages, total_average);
+    let stddev = variance.sqrt();
     SamplingDataSimpleAnalysis {
         elapsed: total_elapsed,
         min,
@@ -38,6 +39,7 @@ pub(crate) fn simple_analyze_sampling_data(
         average: total_average,
         median,
         variance,
+        stddev,
         per_sample_average: sample_averages,
     }
 }
