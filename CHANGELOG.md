@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+## [0.2.0] - 2022-10-07
+
 ### Added
 
 - Sample median, variance, and stddev displayed
