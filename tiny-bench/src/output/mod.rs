@@ -6,7 +6,7 @@ pub(crate) mod ser;
 use crate::benching::SamplingData;
 #[cfg(feature = "bench")]
 use crate::output::analysis::criterion::{
-    calculate_p_value, calculate_t_value, resample, BenchmarkConfig,
+    calculate_p_value, calculate_t_value, resample, BenchmarkConfig, SamplingDataSimpleAnalysis,
 };
 #[cfg(feature = "bench")]
 use crate::output::analysis::sample_data::simple_analyze_sampling_data;
@@ -86,14 +86,7 @@ impl Output for SimpleStdout {
     ) {
         let analysis = simple_analyze_sampling_data(sampling_data);
         print_sample_header(label, total_iters, analysis.elapsed, cfg.num_samples as u64);
-        print_elapsed(
-            analysis.min,
-            analysis.average,
-            analysis.max,
-            analysis.median,
-            analysis.variance,
-            analysis.stddev,
-        );
+        print_analysis(&analysis);
     }
 }
 
@@ -148,14 +141,7 @@ impl Output for ComparedStdout {
     ) {
         let analysis = simple_analyze_sampling_data(sampling_data);
         print_sample_header(label, total_iters, analysis.elapsed, cfg.num_samples as u64);
-        print_elapsed(
-            analysis.min,
-            analysis.average,
-            analysis.max,
-            analysis.median,
-            analysis.variance,
-            analysis.stddev,
-        );
+        print_analysis(&analysis);
         match disk::try_read_last_simpling(label) {
             Ok(Some(last)) => {
                 let old_analysis = simple_analyze_sampling_data(&last);
@@ -226,26 +212,19 @@ pub(crate) fn print_sample_header(
 }
 
 #[cfg(feature = "bench")]
-pub(crate) fn print_elapsed(
-    min: f64,
-    mean: f64,
-    max: f64,
-    median: f64,
-    variance: f64,
-    stddev: f64,
-) {
+pub(crate) fn print_analysis(analysis: &SamplingDataSimpleAnalysis) {
     // Variance has the unit T-squared,
     println!(
         "\telapsed\t[{} {} {}]:\t[{} {} {}] (sample data: med = {}, var = {}², stddev = {})",
         wrap_gray("min"),
         wrap_high_intensity_white("mean"),
         wrap_gray("max"),
-        wrap_gray(&fmt_time(min)),
-        wrap_high_intensity_white(&fmt_time(mean)),
-        wrap_gray(&fmt_time(max)),
-        fmt_time(median),
-        fmt_time(variance),
-        fmt_time(stddev),
+        wrap_gray(&fmt_time(analysis.min)),
+        wrap_high_intensity_white(&fmt_time(analysis.average)),
+        wrap_gray(&fmt_time(analysis.max)),
+        fmt_time(analysis.median),
+        fmt_time(analysis.variance),
+        fmt_time(analysis.stddev),
     );
 }
 
@@ -253,7 +232,7 @@ pub(crate) fn print_elapsed(
 pub(crate) fn timer_print_elapsed(min: f64, mean: f64, max: f64) {
     // Variance has the unit T-squared,
     println!(
-        "\telapsed\t[{} {} {}]:\t[{} {} {}])",
+        "\telapsed\t[{} {} {}]:\t[{} {} {}]",
         wrap_gray("min"),
         wrap_high_intensity_white("mean"),
         wrap_gray("max"),
