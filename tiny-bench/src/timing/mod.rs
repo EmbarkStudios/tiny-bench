@@ -117,7 +117,7 @@ impl TimingData {
     /// Print the data with pretty colors to stdout
     pub fn pretty_print(&self) {
         output::print_timer_header("anonymous", self);
-        output::print_elapsed(
+        output::timer_print_elapsed(
             self.min_nanos as f64,
             self.elapsed as f64 / self.iterations as f64,
             self.max_nanos as f64,
