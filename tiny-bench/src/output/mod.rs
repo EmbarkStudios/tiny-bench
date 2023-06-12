@@ -310,7 +310,7 @@ pub(crate) fn wrap_high_intensity_white(text: &str) -> String {
 pub(crate) fn fmt_time(time: f64) -> String {
     // Nanos
     if time < NANO_LIMIT {
-        format!("{:.2}ns", time)
+        format!("{time:.2}ns")
     } else if time < MICRO_LIMIT {
         format!("{:.2}µs", time / NANO_LIMIT)
     } else if time < MILLI_LIMIT {
@@ -321,12 +321,12 @@ pub(crate) fn fmt_time(time: f64) -> String {
 }
 
 fn fmt_change(change: f64) -> String {
-    format!("{:.4}%", change)
+    format!("{change:.4}%")
 }
 
 pub(crate) fn fmt_num(num: f64) -> String {
     if num < NANO_LIMIT {
-        format!("{:.1}", num)
+        format!("{num:.1}")
     } else if num < MICRO_LIMIT {
         format!("{:.1} thousand", num / NANO_LIMIT)
     } else if num < MILLI_LIMIT {

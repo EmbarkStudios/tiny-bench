@@ -67,11 +67,9 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
     let wu = run_warm_up(&mut closure, cfg.warm_up_time);
     let mean_execution_time = wu.elapsed.as_nanos() as f64 / wu.iterations as f64;
     let sample_size = cfg.num_samples as u64;
-    let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
-    let mut total_iters = 0u128;
-    for count in iters.iter().copied() {
-        total_iters = total_iters.saturating_add(u128::from(count));
-    }
+    let (iters, total_iters) =
+        calculate_iters_and_total_iters(cfg, mean_execution_time, sample_size);
+
     println!(
         "{} mean warm up execution time {} running {} iterations",
         wrap_bold_green(label),
@@ -83,6 +81,23 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
         crate::output::ComparedStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
     } else {
         crate::output::SimpleStdout.dump_sampling_data(label, &sampling_data, cfg, total_iters);
+    }
+}
+
+fn calculate_iters_and_total_iters(
+    cfg: &BenchmarkConfig,
+    mean_execution_time: f64,
+    sample_size: u64,
+) -> (Vec<u64>, u128) {
+    if let Some(max_it) = cfg.max_iterations {
+        (vec![max_it], u128::from(max_it))
+    } else {
+        let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
+        let mut total_iters = 0u128;
+        for count in iters.iter().copied() {
+            total_iters = total_iters.saturating_add(u128::from(count));
+        }
+        (iters, total_iters)
     }
 }
 
@@ -181,11 +196,9 @@ pub fn bench_with_setup_configuration_labeled<T, R, F: FnMut(R) -> T, S: FnMut()
     let mean_execution_time = wu.elapsed.as_nanos() as f64 / wu.iterations as f64;
 
     let sample_size = cfg.num_samples as u64;
-    let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
-    let mut total_iters = 0u128;
-    for count in iters.iter().copied() {
-        total_iters = total_iters.saturating_add(u128::from(count));
-    }
+
+    let (iters, total_iters) =
+        calculate_iters_and_total_iters(cfg, mean_execution_time, sample_size);
     println!(
         "{} mean warm up execution time {} running {} iterations",
         wrap_bold_green(label),

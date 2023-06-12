@@ -1,10 +1,11 @@
 use std::time::Duration;
-use tiny_bench::black_box;
+use tiny_bench::{black_box, BenchmarkConfig};
 
 fn main() {
     bench_test_one();
     bench_test_two();
     bench_test_three();
+    bench_test_four();
 }
 
 fn bench_test_one() {
@@ -44,4 +45,15 @@ fn bench_test_two() {
 
 fn bench_test_three() {
     tiny_bench::bench_labeled("test three, empty", || {});
+}
+
+fn bench_test_four() {
+    tiny_bench::bench_with_configuration_labeled(
+        "test four, max_it",
+        &BenchmarkConfig {
+            max_iterations: Some(5000),
+            ..BenchmarkConfig::default()
+        },
+        || {},
+    );
 }
