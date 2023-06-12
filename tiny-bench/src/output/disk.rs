@@ -73,8 +73,7 @@ fn try_write(
     let parent_dir = find_or_create_result_parent_dir(label)?;
     std::fs::create_dir_all(&parent_dir).map_err(|e| {
         Error::new(format!(
-            "Failed to create output directory {:?}, cause {e}, will not write results",
-            parent_dir
+            "Failed to create output directory {parent_dir:?}, cause {e}, will not write results"
         ))
     })?;
 
@@ -83,17 +82,14 @@ fn try_write(
         let old_file = parent_dir.join(old_file_name);
         if let Err(e) = std::fs::rename(&latest_persisted, &old_file) {
             println!(
-                "{} from {:?} to {:?}, cause {e}, will try to overwrite.",
-                wrap_yellow("Failed to move old sample"),
-                latest_persisted,
-                old_file
+                "{} from {latest_persisted:?} to {old_file:?}, cause {e}, will try to overwrite.",
+                wrap_yellow("Failed to move old sample")
             );
         }
     }
     std::fs::write(&latest_persisted, data).map_err(|e| {
         Error::new(format!(
-            "Failed to write benchmark-data to {:?}, cause {e}",
-            latest_persisted
+            "Failed to write benchmark-data to {latest_persisted:?}, cause {e}"
         ))
     })
 }
@@ -111,8 +107,7 @@ fn try_read(label: &'static str, current_file_name: &'static str) -> Result<Opti
         Err(e) => match e.kind() {
             ErrorKind::NotFound => Ok(None),
             _ => Err(Error::new(format!(
-                "Failed to read file at {:?}, cause: {e}",
-                latest_persisted_path
+                "Failed to read file at {latest_persisted_path:?}, cause: {e}"
             ))),
         },
     }
@@ -133,8 +128,7 @@ fn find_or_create_result_parent_dir(label: &'static str) -> Result<PathBuf> {
     let pb = PathBuf::from(&target);
     let target_buf = std::fs::metadata(&pb).map_err(|e| {
         Error::new(format!(
-            "Failed to check metadata for target dir {:?}, cause {e}",
-            target
+            "Failed to check metadata for target dir {target:?}, cause {e}"
         ))
     })?;
     if !target_buf.is_dir() {
@@ -148,8 +142,7 @@ fn find_or_create_result_parent_dir(label: &'static str) -> Result<PathBuf> {
 
     std::fs::create_dir_all(&result_parent_dir).map_err(|e| {
         Error::new(format!(
-            "Failed to create output directory {:?}, cause {e}",
-            result_parent_dir
+            "Failed to create output directory {result_parent_dir:?}, cause {e}"
         ))
     })?;
     Ok(result_parent_dir)

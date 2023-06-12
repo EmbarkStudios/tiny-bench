@@ -8,8 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 <!-- next-header -->
-
 ## [Unreleased] - ReleaseDate
+### Added
+### Changed
+### Fixed
+
+## [0.3.0] - 2023-06-12
+
+### Added
+
+- `max_iterations` overriding argument to set a hard maximum of iterations.
+
+### Fixed
+
+- Update for new lints and a reformat pass.  
 
 ## [0.2.0] - 2022-10-07
 

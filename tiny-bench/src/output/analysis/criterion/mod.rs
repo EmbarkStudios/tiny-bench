@@ -42,6 +42,11 @@ pub struct BenchmarkConfig {
     /// Puts results in target/tiny-bench/label/.. if target can be found.
     /// used for comparing previous runs
     pub dump_results_to_disk: bool,
+
+    /// Sets a hard ceiling on max iterations, overriding the heuristic calculations for iteration
+    /// count. A rule of thumb; if this is used, the results are unlikely to be statistically
+    /// significant.
+    pub max_iterations: Option<u64>,
 }
 
 impl Default for BenchmarkConfig {
@@ -52,6 +57,7 @@ impl Default for BenchmarkConfig {
             num_samples: 100,
             warm_up_time: Duration::from_secs(3),
             dump_results_to_disk: true,
+            max_iterations: None,
         }
     }
 }
@@ -73,8 +79,7 @@ pub(crate) fn calculate_iterations(
         println!(
             "{} You may wish to increase target time to {:.1?} or lower the requested number of samples",
             wrap_yellow(&format!(
-                "Unable to complete {} samples in {:.1?}",
-                num_samples, target_time
+                "Unable to complete {num_samples} samples in {target_time:.1?}"
             )),
             actual_time
         );
