@@ -20,7 +20,9 @@ pub use benching::{
     bench_with_setup_labeled,
 };
 #[cfg(feature = "bench")]
-pub use output::analysis::criterion::{black_box, BenchmarkConfig};
+pub use output::analysis::criterion::BenchmarkConfig;
+#[cfg(feature = "bench")]
+pub use std::hint::black_box;
 
 #[cfg(any(feature = "bench", feature = "timer"))]
 mod error;

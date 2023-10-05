@@ -10,8 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 ### Added
+
 ### Changed
+- Dont use mod_modules anymore
+- Reexport `std::hint::black_box()` instead of using criterion's custom
+implementation, now that that's stabilized.  
+
 ### Fixed
+- Proper feature gating on benchmark [PR](https://github.com/EmbarkStudios/tiny-bench/pull/8)
+- Update Embark lints
 
 ## [0.3.0] - 2023-06-12
 
