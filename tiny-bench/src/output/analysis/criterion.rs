@@ -1,31 +1,8 @@
+//! Everything in this module is more or less copied from [criterion.rs](https://github.com/bheisler/criterion.rs)
+//! with some rewrites to make it fit, the license is included in this file's directory
 use crate::output::analysis::random::Rng;
 use crate::output::wrap_yellow;
 use std::time::Duration;
-
-/// Everything in this module is more or less copied from [criterion.rs](https://github.com/bheisler/criterion.rs)
-/// with some rewrites to make it fit, the license is included in this file's directory
-
-/// A function that is opaque to the optimizer, used to prevent the compiler from
-/// optimizing away computations in a benchmark.
-///
-/// This variant is stable-compatible, but it may cause some performance overhead
-/// or fail to prevent code from being eliminated.
-///
-/// ```
-/// use tiny_bench::black_box;
-/// for i in 0..10 {
-///     assert_eq!(i, black_box(i));
-/// }
-/// ```
-#[allow(unsafe_code)]
-#[allow(clippy::mem_forget)]
-pub fn black_box<T>(dummy: T) -> T {
-    unsafe {
-        let ret = std::ptr::read_volatile(&dummy);
-        std::mem::forget(dummy);
-        ret
-    }
-}
 
 /// Struct containing all of the configuration options for a benchmark.
 pub struct BenchmarkConfig {

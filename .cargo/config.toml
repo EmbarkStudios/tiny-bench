@@ -1,6 +1,6 @@
 [target.'cfg(all())']
 rustflags = [
-    # BEGIN - Embark standard lints v6 for Rust 1.55+
+    # BEGIN - Embark standard lints v5 for Rust 1.55+
     # do not change or add/remove here, but one can add exceptions after this section
     # for more info see: <https://github.com/EmbarkStudios/rust-ecosystem/issues/59>
     "-Dunsafe_code",
@@ -8,8 +8,11 @@ rustflags = [
     "-Wclippy::await_holding_lock",
     "-Wclippy::char_lit_as_u8",
     "-Wclippy::checked_conversions",
+    "-Wclippy::clear_with_drain",
     "-Wclippy::dbg_macro",
     "-Wclippy::debug_assert_with_mut_call",
+    "-Wclippy::disallowed_methods",
+    "-Wclippy::disallowed_types",
     "-Wclippy::doc_markdown",
     "-Wclippy::empty_enum",
     "-Wclippy::enum_glob_use",
@@ -46,6 +49,7 @@ rustflags = [
     "-Wclippy::mem_forget",
     "-Wclippy::mismatched_target_os",
     "-Wclippy::missing_enforced_import_renames",
+    "-Wclippy::mod_module_files",
     "-Wclippy::mut_mut",
     "-Wclippy::mutex_integer",
     "-Wclippy::needless_borrow",
@@ -54,6 +58,7 @@ rustflags = [
     "-Wclippy::option_option",
     "-Wclippy::path_buf_push_overwrite",
     "-Wclippy::ptr_as_ptr",
+    "-Wclippy::ptr_cast_constness",
     "-Wclippy::rc_mutex",
     "-Wclippy::ref_option_ref",
     "-Wclippy::rest_pat_in_fully_bound_structs",
@@ -67,6 +72,7 @@ rustflags = [
     "-Wclippy::todo",
     "-Wclippy::trait_duplication_in_bounds",
     "-Wclippy::unimplemented",
+    "-Wclippy::unnecessary_box_returns",
     "-Wclippy::unnested_or_patterns",
     "-Wclippy::unused_self",
     "-Wclippy::useless_transmute",
@@ -75,5 +81,6 @@ rustflags = [
     "-Wfuture_incompatible",
     "-Wnonstandard_style",
     "-Wrust_2018_idioms",
-    # END - Embark standard lints v6 for Rust 1.55+
+    # END - Embark standard lints v5 for Rust 1.55+
+
 ]
