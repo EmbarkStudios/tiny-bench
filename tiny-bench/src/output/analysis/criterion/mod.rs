@@ -18,6 +18,7 @@ use std::time::Duration;
 /// }
 /// ```
 #[allow(unsafe_code)]
+#[allow(clippy::mem_forget)]
 pub fn black_box<T>(dummy: T) -> T {
     unsafe {
         let ret = std::ptr::read_volatile(&dummy);
