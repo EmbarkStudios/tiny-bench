@@ -1,13 +1,20 @@
+#[cfg(feature = "bench")]
 use std::time::Duration;
+#[cfg(feature = "bench")]
 use tiny_bench::{black_box, BenchmarkConfig};
 
 fn main() {
+    #[cfg(feature = "bench")]
     bench_test_one();
+    #[cfg(feature = "bench")]
     bench_test_two();
+    #[cfg(feature = "bench")]
     bench_test_three();
+    #[cfg(feature = "bench")]
     bench_test_four();
 }
 
+#[cfg(feature = "bench")]
 fn bench_test_one() {
     tiny_bench::bench_labeled("test one", || {
         let mut v: Vec<i32> = Vec::with_capacity(10_000);
@@ -22,6 +29,7 @@ fn bench_test_one() {
     });
 }
 
+#[cfg(feature = "bench")]
 fn bench_test_two() {
     tiny_bench::bench_with_setup_labeled(
         "test two",
@@ -43,10 +51,12 @@ fn bench_test_two() {
     );
 }
 
+#[cfg(feature = "bench")]
 fn bench_test_three() {
     tiny_bench::bench_labeled("test three, empty", || {});
 }
 
+#[cfg(feature = "bench")]
 fn bench_test_four() {
     tiny_bench::bench_with_configuration_labeled(
         "test four, max_it",
