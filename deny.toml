@@ -1,7 +1,4 @@
 [advisories]
-vulnerability = "deny"
-unmaintained = "warn"
-yanked = "deny"
 ignore = []
 
 [bans]
@@ -23,11 +20,8 @@ github = []
 
 [licenses]
 private = { ignore = true, registries = ["embark"] }
-unlicensed = "deny"
-allow-osi-fsf-free = "neither"
 # We want really high confidence when inferring licenses from text
 confidence-threshold = 0.92
-copyleft = "deny"
 allow = [
     "Apache-2.0",                     # https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)
     "MIT",                            # https://tldrlegal.com/license/mit-license
