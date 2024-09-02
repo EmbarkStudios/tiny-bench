@@ -86,12 +86,15 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
 
 fn calculate_iters_and_total_iters(
     cfg: &BenchmarkConfig,
-    mean_execution_time: f64,
+    mut mean_execution_time: f64,
     sample_size: u64,
 ) -> (Vec<u64>, u128) {
     if let Some(max_it) = cfg.max_iterations {
         (vec![max_it], u128::from(max_it))
     } else {
+        // This can be arbitrarily small, causing an absurd amount of iterations.
+        // Raise it to 1 nano -> max 5B iterations
+        mean_execution_time = mean_execution_time.max(1.0);
         let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
         let mut total_iters = 0u128;
         for count in iters.iter().copied() {
@@ -108,7 +111,7 @@ fn run<T, F: FnMut() -> T>(sample_sizes: Vec<u64>, mut closure: F) -> SamplingDa
         .map(|it_count| {
             let start = Instant::now();
             for _ in 0..it_count {
-                black_box((closure)());
+                black_box(closure());
             }
             start.elapsed().as_nanos()
         })
@@ -222,14 +225,13 @@ fn run_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
         .iter()
         .copied()
         .map(|it_count| {
-            let mut elapsed = Duration::ZERO;
-            for _ in 0..it_count {
-                let input = (setup)();
-                let start = Instant::now();
-                black_box((closure)(input));
-                elapsed += Instant::now().duration_since(start);
+            let inputs = (0..it_count).map(|_| setup()).collect::<Vec<_>>();
+
+            let start = Instant::now();
+            for i in inputs {
+                black_box(closure(i));
             }
-            elapsed.as_nanos()
+            start.elapsed().as_nanos()
         })
         .collect();
     SamplingData {
