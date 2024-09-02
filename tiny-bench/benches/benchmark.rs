@@ -12,6 +12,8 @@ fn main() {
     bench_test_three();
     #[cfg(feature = "bench")]
     bench_test_four();
+    #[cfg(feature = "bench")]
+    bench_test_five();
 }
 
 #[cfg(feature = "bench")]
@@ -66,4 +68,9 @@ fn bench_test_four() {
         },
         || {},
     );
+}
+
+#[cfg(feature = "bench")]
+fn bench_test_five() {
+    tiny_bench::bench_with_setup_labeled("test five, setup noop", || 5, |_i| {});
 }

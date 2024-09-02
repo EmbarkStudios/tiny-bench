@@ -86,13 +86,16 @@ pub fn bench_with_configuration_labeled<T, F: FnMut() -> T>(
 
 fn calculate_iters_and_total_iters(
     cfg: &BenchmarkConfig,
-    mean_execution_time: f64,
+    mut mean_execution_time_ns: f64,
     sample_size: u64,
 ) -> (Vec<u64>, u128) {
     if let Some(max_it) = cfg.max_iterations {
         (vec![max_it], u128::from(max_it))
     } else {
-        let iters = calculate_iterations(mean_execution_time, sample_size, cfg.measurement_time);
+        // This can be arbitrarily small, causing an absurd amount of iterations.
+        // Raise it to 1 nano -> max 5B iterations
+        mean_execution_time_ns = mean_execution_time_ns.max(1.0);
+        let iters = calculate_iterations(mean_execution_time_ns, sample_size, cfg.measurement_time);
         let mut total_iters = 0u128;
         for count in iters.iter().copied() {
             total_iters = total_iters.saturating_add(u128::from(count));
@@ -108,7 +111,7 @@ fn run<T, F: FnMut() -> T>(sample_sizes: Vec<u64>, mut closure: F) -> SamplingDa
         .map(|it_count| {
             let start = Instant::now();
             for _ in 0..it_count {
-                black_box((closure)());
+                black_box(closure());
             }
             start.elapsed().as_nanos()
         })
@@ -218,18 +221,40 @@ fn run_with_setup<T, R, F: FnMut(R) -> T, S: FnMut() -> R>(
     mut setup: S,
     mut closure: F,
 ) -> SamplingData {
+    const BATCH_SIZE: usize = 10_000;
     let times = sample_sizes
         .iter()
         .copied()
         .map(|it_count| {
-            let mut elapsed = Duration::ZERO;
-            for _ in 0..it_count {
-                let input = (setup)();
+            if it_count < BATCH_SIZE as u64 {
+                let inputs = (0..it_count).map(|_| setup()).collect::<Vec<_>>();
                 let start = Instant::now();
-                black_box((closure)(input));
-                elapsed += Instant::now().duration_since(start);
+                for i in inputs {
+                    black_box(closure(i));
+                }
+                start.elapsed().as_nanos()
+            } else {
+                let mut elapsed = Duration::ZERO;
+                let mut batch = Vec::with_capacity(BATCH_SIZE);
+                for _ in 0..it_count {
+                    batch.push(setup());
+                    if batch.len() >= BATCH_SIZE {
+                        let start = Instant::now();
+                        for i in batch.drain(..) {
+                            black_box(closure(i));
+                        }
+                        elapsed += start.elapsed();
+                    }
+                }
+                if !batch.is_empty() {
+                    let start = Instant::now();
+                    for i in batch {
+                        black_box(closure(i));
+                    }
+                    elapsed += start.elapsed();
+                }
+                elapsed.as_nanos()
             }
-            elapsed.as_nanos()
         })
         .collect();
     SamplingData {

@@ -121,7 +121,7 @@ pub(crate) fn calculate_p_value(total_t: f64, distribution: &[f64]) -> f64 {
 }
 
 #[inline]
-pub(crate) fn calculate_median(sample: &mut Vec<f64>) -> f64 {
+pub(crate) fn calculate_median(sample: &mut [f64]) -> f64 {
     sample.sort_by(f64::total_cmp);
     sample.get(sample.len() / 2).copied().unwrap_or_default()
 }
