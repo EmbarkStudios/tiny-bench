@@ -28,6 +28,7 @@ implementation, now that that's stabilized.
 - Update Embark lints
 - Cap iterations at 5 billion
 - Precompute, chunk, and batch setup values to reduce measurement error
+- Update linting
 
 ## [0.3.0] - 2023-06-12
 

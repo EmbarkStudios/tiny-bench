@@ -3,9 +3,8 @@ use tiny_bench::Timeable;
 
 pub fn main() {
     let v = (0..100)
-        .map(|a| {
+        .inspect(|_a| {
             my_expensive_call();
-            a
         })
         .timed()
         .max();
