@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Fixed
+
+## [0.4.0] - 2024-09-10
+### Added
+
+### Changed
 - Dont use mod_modules anymore
 - Reexport `std::hint::black_box()` instead of using criterion's custom
 implementation, now that that's stabilized.  
@@ -19,6 +26,8 @@ implementation, now that that's stabilized.
 ### Fixed
 - Proper feature gating on benchmark [PR](https://github.com/EmbarkStudios/tiny-bench/pull/8)
 - Update Embark lints
+- Cap iterations at 5 billion
+- Precompute, chunk, and batch setup values to reduce measurement error
 
 ## [0.3.0] - 2023-06-12
 
